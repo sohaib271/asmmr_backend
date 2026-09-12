@@ -1,0 +1,2 @@
+export function notFound(req,res){res.status(404).json({success:false,message:`Route not found: ${req.method} ${req.originalUrl}`});}
+export function errorHandler(error,req,res,next){if(error.name==='ValidationError'){return res.status(400).json({success:false,message:'Please correct the highlighted fields.',errors:Object.fromEntries(Object.entries(error.errors).map(([key,value])=>[key,value.message]))});}console.error(error);res.status(error.status||500).json({success:false,message:process.env.NODE_ENV==='production'?'Something went wrong.':error.message});}

@@ -1,0 +1,8 @@
+{
+  "name": "asmmr-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {"dev":"node --watch src/server.js","start":"node src/server.js"},
+  "dependencies": {"cors":"latest","dotenv":"latest","express":"latest","helmet":"latest","mongoose":"latest","morgan":"latest","express-rate-limit":"latest","multer":"latest"}
+}

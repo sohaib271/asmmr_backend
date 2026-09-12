@@ -1,0 +1,6 @@
+.env
+node_modules/
+uploads/profiles/*
+uploads/cvs/*
+!uploads/profiles/.gitkeep
+!uploads/cvs/.gitkeep
