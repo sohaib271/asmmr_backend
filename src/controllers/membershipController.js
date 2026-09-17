@@ -3,6 +3,18 @@ import { unlink } from 'node:fs/promises';
 
 const duplicateMessage = 'An application with this email address already exists. Please contact us if you need to update it.';
 
+export async function listMembers(req, res, next) {
+  try {
+    const members = await Membership.find({ status: 'approved' })
+      .select('fullName designation institution country nationality interests contribution profilePicture')
+      .sort({ fullName: 1 })
+      .lean();
+    res.json({ success: true, data: members });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function removeRejectedUploads(files) {
   const paths = Object.values(files || {}).flat().map(file => file.path).filter(Boolean);
   await Promise.allSettled(paths.map(path => unlink(path)));
