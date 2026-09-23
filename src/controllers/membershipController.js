@@ -30,14 +30,15 @@ export async function createMembership(req, res, next) {
           message: "A profile picture and PDF CV are required.",
         });
     }
-    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : undefined;
-    if (email && await Membership.exists({ email }).collation({ locale: 'en', strength: 2 })) {
+    const email = req.user.email;
+    if (await Membership.exists({ $or: [{ email }, { user: req.user._id }] }).collation({ locale: 'en', strength: 2 })) {
       await removeRejectedUploads(req.files);
       return res.status(409).json({ success: false, message: duplicateMessage, errors: { email: 'This email address has already been used for an application.' } });
     }
     const membership = await Membership.create({
       ...req.body,
       email,
+      user: req.user._id,
       interests: Array.isArray(req.body.interests)
         ? req.body.interests
         : [req.body.interests].filter(Boolean),
@@ -58,4 +59,11 @@ export async function createMembership(req, res, next) {
     }
     next(error);
   }
+}
+
+export async function getMyMembership(req, res, next) {
+  try {
+    const membership = await Membership.findOne({ user: req.user._id }).lean();
+    res.json({ success: true, data: membership });
+  } catch (error) { next(error); }
 }

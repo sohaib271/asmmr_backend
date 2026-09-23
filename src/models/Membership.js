@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const membershipSchema = new mongoose.Schema(
   {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true, sparse: true },
     fullName: { type: String, required: true, trim: true, maxLength: 120 },
     designation: { type: String, required: true, trim: true, maxLength: 120 },
     institution: { type: String, required: true, trim: true, maxLength: 180 },
@@ -31,9 +32,12 @@ const membershipSchema = new mongoose.Schema(
     contribution: { type: String, required: true, trim: true, maxLength: 1200 },
     status: {
       type: String,
-      enum: ["pending", "reviewing", "approved", "declined"],
+      enum: ["pending", "reviewing", "approved", "rejected", "declined"],
       default: "pending",
     },
+    reviewReason: { type: String, trim: true, maxLength: 1000, default: '' },
+    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    reviewedAt: Date,
   },
   { timestamps: true },
 );
