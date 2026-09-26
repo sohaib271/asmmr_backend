@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Membership from '../models/Membership.js';
 
 const cookieName = process.env.AUTH_COOKIE_NAME || 'asmmr_session';
 
@@ -20,4 +21,12 @@ export async function requireAuth(req, res, next) {
 export function requireAdmin(req, res, next) {
   if (req.user?.role !== 'admin') return res.status(403).json({ success: false, message: 'Administrator access is required.' });
   next();
+}
+
+export async function requireReviewer(req, res, next) {
+  try {
+    if (req.user?.role === 'admin') return next();
+    if (req.user?.role !== 'reviewer' || !await Membership.exists({ user: req.user._id, status: 'approved' })) return res.status(403).json({ success: false, message: 'Reviewer access is required.' });
+    next();
+  } catch (error) { next(error); }
 }

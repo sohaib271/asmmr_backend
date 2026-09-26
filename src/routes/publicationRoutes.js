@@ -1,8 +1,11 @@
 import { Router } from 'express';
-import { createPublication, listMyPublications } from '../controllers/publicationController.js';
+import { createPublication, downloadPublication, listMyPublications, replacePublication } from '../controllers/publicationController.js';
 import { requireAuth } from '../middleware/auth.js';
+import { publicationUpload } from '../middleware/upload.js';
 const router = Router();
 router.use(requireAuth);
 router.get('/mine', listMyPublications);
-router.post('/', createPublication);
+router.post('/', publicationUpload.single('manuscript'), createPublication);
+router.put('/:id/manuscript', publicationUpload.single('manuscript'), replacePublication);
+router.get('/:id/manuscript', downloadPublication);
 export default router;

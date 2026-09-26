@@ -2,8 +2,10 @@
 node_modules/
 uploads/profiles/*
 uploads/cvs/*
+uploads/publications/*
 !uploads/profiles/.gitkeep
 !uploads/cvs/.gitkeep
+!uploads/publications/.gitkeep
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat

@@ -9,6 +9,7 @@ import membershipRoutes from "./routes/membershipRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import publicationRoutes from "./routes/publicationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import reviewerRoutes from "./routes/reviewerRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .split(",")
@@ -33,7 +34,8 @@ app.use(
 app.use(express.json({ limit: "100kb" }));
 app.use(cookieParser());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
-app.use("/uploads", express.static(path.resolve("uploads")));
+app.use("/uploads/profiles", express.static(path.resolve("uploads/profiles")));
+app.use("/uploads/cvs", express.static(path.resolve("uploads/cvs")));
 app.use((req, res, next) => {
   const origin = req.get("origin")?.replace(/\/$/, "");
   if (
@@ -69,6 +71,7 @@ app.use(
 );
 app.use("/api/publications", publicationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reviewer", reviewerRoutes);
 app.use(notFound);
 app.use(errorHandler);
 export default app;
