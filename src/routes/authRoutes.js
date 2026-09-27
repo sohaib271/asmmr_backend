@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import { accountStatus, login, logout, me, register } from '../controllers/authController.js';
+import { accountStatus, forgotPassword, login, logout, me, register, resetPassword, verifyRegistration } from '../controllers/authController.js';
 import { requireAuth } from '../middleware/auth.js';
 const router = Router();
 router.get('/account-status', accountStatus);
 router.post('/register', register);
+router.post('/verify-registration', verifyRegistration);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 router.post('/login', login);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);

@@ -1,6 +1,7 @@
 import Membership from '../models/Membership.js';
 import Publication from '../models/Publication.js';
 import User from '../models/User.js';
+import { sendNotification, sendSubmissionEmail } from '../services/emailService.js';
 
 export async function adminOverview(req, res, next) {
   try {
@@ -54,6 +55,7 @@ export async function assignPublication(req, res, next) {
     if (!reviewer || !await Membership.exists({ user: reviewer._id, status: 'approved' })) return res.status(400).json({ success: false, message: 'Select an approved reviewer.' });
     const item = await Publication.findByIdAndUpdate(req.params.id, { assignedReviewer: reviewer._id, assignedBy: req.user._id, assignedAt: new Date(), status: 'under-review' }, { new: true, runValidators: true });
     if (!item) return res.status(404).json({ success: false, message: 'Publication not found.' });
+    sendNotification(() => sendSubmissionEmail({ to: reviewer.email, name: reviewer.name, title: item.title, status: 'assigned', audience: 'reviewer' }), `review assignment ${item._id}`);
     res.json({ success: true, message: 'Publication assigned to reviewer.', data: item });
   } catch (error) { next(error); }
 }

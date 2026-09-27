@@ -1,4 +1,5 @@
 import Publication from '../models/Publication.js';
+import { sendNotification, sendSubmissionEmail } from '../services/emailService.js';
 
 export async function listAssignments(req, res, next) {
   try {
@@ -13,8 +14,9 @@ export async function decidePublication(req, res, next) {
     const reason = String(req.body.reason || '').trim();
     if (!['approved', 'rejected', 'revision-requested'].includes(status)) return res.status(400).json({ success: false, message: 'Choose a valid decision.' });
     if (status !== 'approved' && !reason) return res.status(400).json({ success: false, message: 'A reason or suggested improvements are required.' });
-    const item = await Publication.findOneAndUpdate({ _id: req.params.id, assignedReviewer: req.user._id }, { status, reviewReason: reason, reviewedBy: req.user._id, reviewedAt: new Date(), publishedAt: status === 'approved' ? new Date() : null }, { new: true, runValidators: true });
+    const item = await Publication.findOneAndUpdate({ _id: req.params.id, assignedReviewer: req.user._id }, { status, reviewReason: reason, reviewedBy: req.user._id, reviewedAt: new Date(), publishedAt: status === 'approved' ? new Date() : null }, { new: true, runValidators: true }).populate('user', 'name email');
     if (!item) return res.status(404).json({ success: false, message: 'Assigned publication not found.' });
+    sendNotification(() => sendSubmissionEmail({ to: item.user.email, name: item.user.name, title: item.title, status, reason }), `review decision ${item._id}`);
     res.json({ success: true, message: 'Review decision saved.', data: item });
   } catch (error) { next(error); }
 }

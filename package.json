@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "latest",
     "morgan": "latest",
-    "multer": "latest"
+    "multer": "latest",
+    "nodemailer": "^10.0.10"
   }
 }

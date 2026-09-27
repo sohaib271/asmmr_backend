@@ -2,6 +2,8 @@ import Publication from '../models/Publication.js';
 import Membership from '../models/Membership.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import User from '../models/User.js';
+import { sendNotification, sendSubmissionEmail } from '../services/emailService.js';
 
 const removeFile = async file => { if (file) await fs.unlink(path.resolve(file)).catch(() => {}); };
 const isPdf = async file => {
@@ -23,6 +25,11 @@ export async function createPublication(req, res, next) {
     if (!req.file) return res.status(400).json({ success: false, message: 'Upload the manuscript as a PDF.' });
     if (!await isPdf(req.file)) { await removeFile(req.file.path); return res.status(400).json({ success: false, message: 'The uploaded file is not a valid PDF.' }); }
     const publication = await Publication.create({ user: req.user._id, title: req.body.title, type: req.body.type, abstract: req.body.abstract, manuscriptFile: req.file.path, originalFileName: req.file.originalname, fileSize: req.file.size });
+    sendNotification(() => sendSubmissionEmail({ to: req.user.email, name: req.user.name, title: publication.title, status: 'submitted' }), `submission confirmation ${publication._id}`);
+    sendNotification(async () => {
+      const reviewers = await User.find({ role: 'reviewer' }).select('name email').lean();
+      await Promise.all(reviewers.map(reviewer => sendSubmissionEmail({ to: reviewer.email, name: reviewer.name, title: publication.title, status: 'new-review', audience: 'reviewer' })));
+    }, `new submission reviewer notice ${publication._id}`);
     res.status(201).json({ success: true, message: 'Publication submitted for review.', data: publication });
   } catch (error) { await removeFile(req.file?.path); next(error); }
 }
@@ -39,6 +46,11 @@ export async function replacePublication(req, res, next) {
     item.version += 1; item.status = 'pending'; item.reviewReason = ''; item.reviewedBy = null; item.reviewedAt = null; item.publishedAt = null;
     await item.save();
     await removeFile(oldFile);
+    sendNotification(() => sendSubmissionEmail({ to: req.user.email, name: req.user.name, title: item.title, status: 'resubmitted' }), `resubmission confirmation ${item._id}`);
+    sendNotification(async () => {
+      const reviewers = await User.find({ role: 'reviewer' }).select('name email').lean();
+      await Promise.all(reviewers.map(reviewer => sendSubmissionEmail({ to: reviewer.email, name: reviewer.name, title: item.title, status: 'new-review', audience: 'reviewer' })));
+    }, `resubmission reviewer notice ${item._id}`);
     res.json({ success: true, message: 'Improved manuscript uploaded and resubmitted.', data: item });
   } catch (error) { await removeFile(req.file?.path); next(error); }
 }
