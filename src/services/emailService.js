@@ -21,7 +21,7 @@ function layout({ preheader, heading, greeting, content, buttonLabel, buttonUrl 
   <div style="display:none;max-height:0;overflow:hidden">${escapeHtml(preheader)}</div>
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f2f7fb;padding:32px 12px"><tr><td align="center">
   <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(16,54,82,.1)">
-  <tr><td style="background:#062d54;padding:24px 36px"><img src="${escapeHtml(logoUrl)}" alt="${brandName}" width="105" style="display:block;max-height:54px;object-fit:contain"><div style="color:#9dddf4;font-size:12px;letter-spacing:1.5px;margin-top:12px">ADVANCING MEDICAL RESEARCH</div></td></tr>
+  <tr><td style="background:#062d54;padding:24px 36px"><img src="${escapeHtml(logoUrl)}" alt="${brandName}" width="105" style="display:block;max-height:54px;object-fit:contain"><div style="color:#9dddf4;font-size:12px;letter-spacing:1.5px;margin-top:12px">ADVANCING REASEARCH</div></td></tr>
   <tr><td style="padding:36px"><h1 style="margin:0 0 18px;color:#092d54;font-size:26px;line-height:1.25">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.7;margin:0 0 18px">${escapeHtml(greeting)}</p>${content}
   ${buttonLabel && buttonUrl ? `<p style="margin:28px 0"><a href="${escapeHtml(buttonUrl)}" style="display:inline-block;background:#0874ad;color:#fff;text-decoration:none;padding:13px 22px;border-radius:7px;font-weight:bold">${escapeHtml(buttonLabel)}</a></p>` : ''}
   <p style="font-size:14px;line-height:1.7;color:#66798b;margin:26px 0 0">Kind regards,<br><strong>The ASMMR Team</strong></p></td></tr>
